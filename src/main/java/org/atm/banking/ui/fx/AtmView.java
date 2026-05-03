@@ -13,10 +13,11 @@ import org.atm.banking.domain.Transaction;
 
 public class AtmView extends BorderPane {
 
-    final TextField     pinInput       = input("PIN  (4–6 digits)");
+    final TextField     accountInput   = input("Your 10-digit account number");
+    final PasswordField pinInput       = pinField("PIN  (4–6 digits)");
     final TextField     amountInput    = input("Amount  e.g.  500.00");
     final TextField     destInput      = input("Destination Account Number");
-    final TextField     newPinInput    = input("New PIN  (4–6 digits)");
+    final PasswordField newPinInput    = pinField("New PIN  (4–6 digits)");
 
     final Button btnLogin      = actionBtn("LOGIN");
     final Button btnRegister   = actionBtn("CREATE ACCOUNT");
@@ -141,11 +142,13 @@ public class AtmView extends BorderPane {
     }
 
     void showLogin() {
+        accountInput.clear();
         pinInput.clear();
         Label title = title("Account Login");
         Label sub   = sub("Enter your account number and PIN");
 
         VBox form = form(
+            row("Account Number", accountInput),
             row("PIN", pinInput)
         );
 
@@ -235,7 +238,7 @@ public class AtmView extends BorderPane {
         Label sub   = sub("Enter your current PIN, then choose a new one");
         VBox form = form(
             row("Current PIN", pinInput),
-            row("New PIN", newPinInput)
+            row("New PIN",     newPinInput)
         );
         show(wrap(card(title, sub, form, right(btnChangePin))));
     }
@@ -394,6 +397,12 @@ public class AtmView extends BorderPane {
         return f;
     }
 
+    private static PasswordField pinField(String prompt) {
+        PasswordField f = new PasswordField();
+        f.setPromptText(prompt);
+        return f;
+    }
+
     private void startClock() {
         javafx.animation.Timeline clock = new javafx.animation.Timeline(
             new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e ->
@@ -408,6 +417,7 @@ public class AtmView extends BorderPane {
     void setBalanceChip(String text) { balanceChip.setText(text); }
     void setAccountChip(String text) { accountChip.setText(text); }
 
+    String getAccount() { return accountInput.getText().trim(); }
     String getPin()     { return pinInput.getText(); }
     String getAmount()  { return amountInput.getText().trim(); }
     String getDest()    { return destInput.getText().trim(); }

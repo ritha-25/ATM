@@ -56,32 +56,24 @@ public class AtmController {
     }
 
     private void doLogin() {
-        String pin = view.getPin();
-        if (pin.isBlank()) { status("Please enter your PIN."); return; }
+        String account = view.getAccount();
+        String pin     = view.getPin();
 
-        javafx.scene.control.TextInputDialog dlg = new javafx.scene.control.TextInputDialog();
-        dlg.setTitle("Account Login");
-        dlg.setHeaderText("Enter your Account Number");
-        dlg.setContentText("Account Number:");
-        dlg.getEditor().setPromptText("10-digit account number");
+        if (account.isBlank()) { status("Please enter your account number."); return; }
+        if (pin.isBlank())     { status("Please enter your PIN."); return; }
 
-        dlg.getDialogPane().setStyle("-fx-background-color: #111827;");
-
-        dlg.showAndWait().ifPresent(accountNumber -> {
-            if (accountNumber.isBlank()) { status("Account number is required."); return; }
-            try {
-                service.login(accountNumber.trim(), pin);
-                view.setAccountChip(service.currentAccountNumber());
-                view.setNavLoggedIn(true);
-                doBalance();
-                status("Welcome! Logged in as account " + service.currentAccountNumber());
-            } catch (AtmBankingException ex) {
-                status(ex.getMessage());
-                if (service.isAccountLocked(accountNumber.trim())) {
-                    view.showLocked(accountNumber.trim());
-                }
+        try {
+            service.login(account, pin);
+            view.setAccountChip(service.currentAccountNumber());
+            view.setNavLoggedIn(true);
+            doBalance();   // navigate straight to balance screen
+            status("Welcome! Logged in as account " + service.currentAccountNumber());
+        } catch (AtmBankingException ex) {
+            status(ex.getMessage());
+            if (service.isAccountLocked(account)) {
+                view.showLocked(account);
             }
-        });
+        }
     }
 
     private void doRegister() {
