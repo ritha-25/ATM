@@ -113,12 +113,14 @@ public class AtmController {
     }
 
     private void doDeposit() {
-        Double amount = requireAmount();
+        String text = view.getDepositAmount();
+        if (text.isBlank()) { status("Please enter an amount."); return; }
+        Double amount = parseAmount(text);
         if (amount == null) return;
         try {
             double balance = service.deposit(amount);
             autoSave();
-            view.amountInput.clear();
+            view.depositAmount.clear();
             refreshBalance(balance);
             status("Deposit successful. New balance: $" + fmt(balance));
             view.showBalance(balance);
@@ -128,12 +130,14 @@ public class AtmController {
     }
 
     private void doWithdraw() {
-        Double amount = requireAmount();
+        String text = view.getWithdrawAmount();
+        if (text.isBlank()) { status("Please enter an amount."); return; }
+        Double amount = parseAmount(text);
         if (amount == null) return;
         try {
             double balance = service.withdraw(amount);
             autoSave();
-            view.amountInput.clear();
+            view.withdrawAmount.clear();
             refreshBalance(balance);
             status("Withdrawal successful. New balance: $" + fmt(balance));
             view.showBalance(balance);
@@ -143,7 +147,9 @@ public class AtmController {
     }
 
     private void doTransfer() {
-        Double amount = requireAmount();
+        String text = view.getTransferAmount();
+        if (text.isBlank()) { status("Please enter an amount."); return; }
+        Double amount = parseAmount(text);
         if (amount == null) return;
         String dest = view.getDest();
         if (dest.isBlank()) { status("Please enter a destination account number."); return; }
@@ -151,7 +157,7 @@ public class AtmController {
             service.transfer(dest, amount);
             double balance = service.checkBalance();
             autoSave();
-            view.amountInput.clear();
+            view.transferAmount.clear();
             view.destInput.clear();
             refreshBalance(balance);
             status("Transfer to " + dest + " successful. New balance: $" + fmt(balance));
@@ -255,9 +261,7 @@ public class AtmController {
         Platform.runLater(() -> view.setStatus(msg));
     }
 
-    private Double requireAmount() {
-        String text = view.getAmount();
-        if (text.isBlank()) { status("Please enter an amount."); return null; }
+    private Double parseAmount(String text) {
         try { return Double.parseDouble(text); }
         catch (NumberFormatException e) { status("Amount must be a number, e.g. 250.00"); return null; }
     }

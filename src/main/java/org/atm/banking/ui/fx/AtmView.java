@@ -15,9 +15,13 @@ public class AtmView extends BorderPane {
 
     final TextField     accountInput   = input("Your 10-digit account number");
     final PasswordField pinInput       = pinField("PIN  (4–6 digits)");
-    final TextField     amountInput    = input("Amount  e.g.  500.00");
+    final TextField     depositAmount  = input("Amount  e.g.  500.00");
+    final TextField     withdrawAmount = input("Amount  e.g.  200.00");
+    final TextField     transferAmount = input("Amount  e.g.  100.00");
     final TextField     destInput      = input("Destination Account Number");
     final PasswordField newPinInput    = pinField("New PIN  (4–6 digits)");
+    // kept for register opening balance
+    final TextField     amountInput    = input("Opening balance  e.g.  1000.00");
 
     final Button btnLogin      = actionBtn("LOGIN");
     final Button btnRegister   = actionBtn("CREATE ACCOUNT");
@@ -192,29 +196,29 @@ public class AtmView extends BorderPane {
     }
 
     void showDeposit() {
-        amountInput.clear();
+        depositAmount.clear();
         Label title = title("Deposit Funds");
         Label sub   = sub("Enter the amount you wish to deposit");
-        VBox form = form(row("Amount ($)", amountInput));
+        VBox form = form(row("Amount ($)", depositAmount));
         show(wrap(card(title, sub, form, right(btnDeposit))));
     }
 
     void showWithdraw() {
-        amountInput.clear();
+        withdrawAmount.clear();
         Label title = title("Withdraw Funds");
         Label sub   = sub("Max per transaction: $1,000  |  Max per day: $3,000");
-        VBox form = form(row("Amount ($)", amountInput));
+        VBox form = form(row("Amount ($)", withdrawAmount));
         show(wrap(card(title, sub, form, right(btnWithdraw))));
     }
 
     void showTransfer() {
-        amountInput.clear();
+        transferAmount.clear();
         destInput.clear();
         Label title = title("Transfer Funds");
         Label sub   = sub("Send money to another SecureBank account");
         VBox form = form(
             row("Destination Account", destInput),
-            row("Amount ($)", amountInput)
+            row("Amount ($)", transferAmount)
         );
         show(wrap(card(title, sub, form, right(btnTransfer))));
     }
@@ -417,11 +421,14 @@ public class AtmView extends BorderPane {
     void setBalanceChip(String text) { balanceChip.setText(text); }
     void setAccountChip(String text) { accountChip.setText(text); }
 
-    String getAccount() { return accountInput.getText().trim(); }
-    String getPin()     { return pinInput.getText(); }
-    String getAmount()  { return amountInput.getText().trim(); }
-    String getDest()    { return destInput.getText().trim(); }
-    String getNewPin()  { return newPinInput.getText(); }
+    String getAccount()        { return accountInput.getText().trim(); }
+    String getPin()            { return pinInput.getText(); }
+    String getDepositAmount()  { return depositAmount.getText().trim(); }
+    String getWithdrawAmount() { return withdrawAmount.getText().trim(); }
+    String getTransferAmount() { return transferAmount.getText().trim(); }
+    String getAmount()         { return amountInput.getText().trim(); }  // register opening balance
+    String getDest()           { return destInput.getText().trim(); }
+    String getNewPin()         { return newPinInput.getText(); }
 
     TableView<Transaction> getTxTable() { return txTable; }
 
